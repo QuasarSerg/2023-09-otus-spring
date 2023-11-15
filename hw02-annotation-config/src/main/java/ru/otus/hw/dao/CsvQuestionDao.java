@@ -45,13 +45,13 @@ public class CsvQuestionDao implements QuestionDao {
 
     private InputStream getInputStream() {
         if (fileNameProvider.getTestFileName().isEmpty()) {
-            throw new QuestionReadException("Failed to read file", new RuntimeException());
+            throw new QuestionReadException("Failed to read file");
         }
         ClassLoader classLoader = getClass().getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream(fileNameProvider.getTestFileName());
         if (isNull(inputStream)) {
             throw new QuestionReadException("The resource %s could not be found"
-                    .formatted(fileNameProvider.getTestFileName()), new IOException());
+                    .formatted(fileNameProvider.getTestFileName()));
         }
         return inputStream;
     }
