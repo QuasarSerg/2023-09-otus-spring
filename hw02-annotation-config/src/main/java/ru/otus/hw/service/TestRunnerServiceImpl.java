@@ -23,7 +23,9 @@ public class TestRunnerServiceImpl implements TestRunnerService {
             var testResult = testService.executeTestFor(student);
             resultService.showResult(testResult);
         } catch (QuestionReadException e) {
-            ioService.printLine("Error reading file. %s".formatted(e.getMessage()));
+            ioService.printLine("Error reading questions");
+        } catch (Throwable e) {
+            ioService.printLine("Unknown error");
         }
     }
 }
