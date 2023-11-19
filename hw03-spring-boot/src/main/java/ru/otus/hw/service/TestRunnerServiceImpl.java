@@ -15,7 +15,7 @@ public class TestRunnerServiceImpl implements CommandLineRunner {
 
     private final ResultService resultService;
 
-    private final LocalizedIOServiceImpl localizedIOService;
+    private final LocalizedIOService localizedIOService;
 
 
     @Override
