@@ -1,15 +1,12 @@
 package ru.otus.hw.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
-import ru.otus.hw.events.TestRunnerEvent;
 import ru.otus.hw.exceptions.QuestionReadException;
 
 @Service
 @RequiredArgsConstructor
-public class TestRunnerServiceImpl implements CommandLineRunner, ApplicationListener<TestRunnerEvent> {
+public class TestRunnerServiceImpl implements TestRunnerService {
 
     private final TestService testService;
 
@@ -21,7 +18,7 @@ public class TestRunnerServiceImpl implements CommandLineRunner, ApplicationList
 
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run() {
         try {
             var student = studentService.determineCurrentStudent();
             var testResult = testService.executeTestFor(student);
@@ -29,17 +26,6 @@ public class TestRunnerServiceImpl implements CommandLineRunner, ApplicationList
         } catch (QuestionReadException e) {
             localizedIOService.printLine("Error reading questions");
         } catch (Throwable e) {
-            localizedIOService.printLine("Unknown error");
-        }
-    }
-
-
-    @Override
-    public void onApplicationEvent(TestRunnerEvent testRunnerEvent) {
-        String[] args = testRunnerEvent.getArgs();
-        try {
-            run(args);
-        } catch (Exception e) {
             localizedIOService.printLine("Unknown error");
         }
     }

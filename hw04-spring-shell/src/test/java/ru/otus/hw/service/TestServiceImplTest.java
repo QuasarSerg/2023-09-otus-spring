@@ -6,14 +6,13 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
+import ru.otus.hw.dao.CsvQuestionDao;
 import ru.otus.hw.domain.Student;
 import ru.otus.hw.domain.TestResult;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@ComponentScan(value = "ru.otus.hw.service")
+@SpringBootTest(classes = {TestServiceImpl.class, CsvQuestionDao.class})
 class TestServiceImplTest {
 
     @MockBean
@@ -22,12 +21,8 @@ class TestServiceImplTest {
     @MockBean
     private TestRunnerService testRunnerService;
 
-    private final TestService testService;
-
     @Autowired
-    TestServiceImplTest(TestService testService) {
-        this.testService = testService;
-    }
+    private TestService testService;
 
 
     @BeforeEach
