@@ -6,21 +6,26 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
+import ru.otus.hw.service.LocalizedIOService;
 import ru.otus.hw.service.TestRunnerService;
+
+import static java.util.Objects.isNull;
 
 
 @ShellComponent
 @RequiredArgsConstructor
-public class ApplicationEventsCommands {
+public class ApplicationCommands {
 
     private final TestRunnerService testRunnerService;
+
+    private final LocalizedIOService ioService;
 
     private String userName;
 
     @ShellMethod(value = "Login command", key = {"l", "login"})
     public String login(@ShellOption(defaultValue = "AnyUser") String userName) {
         this.userName = userName;
-        return String.format("Добро пожаловать: %s", userName);
+        return ioService.getMessage("ApplicationCommands.welcome", userName);
     }
 
     @ShellMethod(value = "Run command", key = {"r", "run"})
@@ -30,6 +35,10 @@ public class ApplicationEventsCommands {
     }
 
     private Availability isRunCommandAvailable() {
-        return userName == null ? Availability.unavailable("Сначала залогиньтесь") : Availability.available();
+        if (isNull(userName)) {
+            return Availability.unavailable(ioService.getMessage("ApplicationCommands.login.first"));
+        } else {
+            return Availability.available();
+        }
     }
 }

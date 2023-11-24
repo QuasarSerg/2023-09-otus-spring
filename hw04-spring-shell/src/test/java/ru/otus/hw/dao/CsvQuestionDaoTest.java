@@ -13,12 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(classes = CsvQuestionDao.class)
 class CsvQuestionDaoTest {
 
-    private final QuestionDao csvQuestionDao;
-
     @Autowired
-    CsvQuestionDaoTest(QuestionDao csvQuestionDao) {
-        this.csvQuestionDao = csvQuestionDao;
-    }
+    private QuestionDao csvQuestionDao;
 
     @Test
     void findAll() {
