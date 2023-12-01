@@ -104,11 +104,11 @@ public class JdbcBookRepository implements BookRepository {
         paramSource.addValue("author_id", book.getAuthor().getId());
         paramSource.addValue("genre_id", book.getGenre().getId());
 
-        namedParameterJdbc.update(
+        int rowsCount = namedParameterJdbc.update(
                 "update books set title = :title, author_id = :author_id, genre_id = :genre_id where id = :id",
                 paramSource, keyHolder);
 
-        if (keyHolder.getKeyList().isEmpty()) {
+        if (rowsCount == 0) {
             throw new EntityNotFoundException("Book with id %d not found".formatted(book.getId()));
         }
         // Выбросить EntityNotFoundException если не обновлено ни одной записи в БД
