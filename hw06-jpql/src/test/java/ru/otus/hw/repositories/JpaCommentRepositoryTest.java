@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JpaCommentRepositoryTest {
 
     @Autowired
-    private JpaCommentRepository repositoryJpa;
+    private JpaCommentRepository jpaCommentRepository;
 
     @Autowired
     private TestEntityManager em;
@@ -26,11 +26,12 @@ class JpaCommentRepositoryTest {
     @Test
     void shouldSaveNewComment() {
         var expectedComment = new Comment(3, "Отличная книга!",  em.find(Book.class, 1L));
-        var returnedComment = repositoryJpa.save(expectedComment);
+        var returnedComment = jpaCommentRepository.save(expectedComment);
 
         assertThat(returnedComment).isNotNull()
-                .isEqualTo(expectedComment);
+                .matches(comment -> comment.getId() > 0)
+                .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedComment);
 
-        assertThat(repositoryJpa.findById(returnedComment.getId()).orElse(new Comment())).isEqualTo(returnedComment);
+        assertThat(em.getEntityManager().find(Comment.class, returnedComment.getId())).isEqualTo(returnedComment);
     }
 }
