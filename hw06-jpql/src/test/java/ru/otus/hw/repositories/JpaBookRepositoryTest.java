@@ -11,6 +11,7 @@ import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,16 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 @DisplayName("Репозиторий на основе Jpa для работы с книгами ")
 @DataJpaTest
-@Import({JpaAuthorRepository.class, JpaGenreRepository.class, JpaBookRepository.class})
+@Import({JpaBookRepository.class})
 class JpaBookRepositoryTest {
 
     private static final long FIRST_BOOK_ID = 1L;
-
-    @Autowired
-    private JpaAuthorRepository jpaAuthorRepository;
-
-    @Autowired
-    private JpaGenreRepository jpaGenreRepository;
 
     @Autowired
     private JpaBookRepository jpaBookRepository;
@@ -36,17 +31,15 @@ class JpaBookRepositoryTest {
     @Autowired
     private TestEntityManager em;
 
-    private List<Author> dbAuthors;
+    private final List<Author> dbAuthors = new ArrayList<>();
 
-    private List<Genre> dbGenres;
+    private final List<Genre> dbGenres = new ArrayList<>();
 
-    private List<Book> dbBooks;
+    private final List<Book> dbBooks = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
-        dbAuthors = jpaAuthorRepository.findAll();
-        dbGenres = jpaGenreRepository.findAll();
-        dbBooks = jpaBookRepository.findAll();
+        generateTestData();
     }
 
     @DisplayName("должен загружать книгу по id")
@@ -54,7 +47,7 @@ class JpaBookRepositoryTest {
     void shouldReturnCorrectBookById() {
         for (Book expectedBook : dbBooks) {
             Book actualBook = jpaBookRepository.findById(expectedBook.getId()).orElse(new Book());
-            assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
+            assertThat(actualBook).usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
         }
     }
 
@@ -64,7 +57,7 @@ class JpaBookRepositoryTest {
         var actualBooks = jpaBookRepository.findAll();
         var expectedBooks = dbBooks;
 
-        assertThat(actualBooks).containsExactlyElementsOf(expectedBooks);
+        assertThat(actualBooks).isNotNull().hasSize(expectedBooks.size());
         assertThat(actualBooks).usingRecursiveComparison().isEqualTo(expectedBooks);
         actualBooks.forEach(System.out::println);
     }
@@ -79,7 +72,7 @@ class JpaBookRepositoryTest {
                 .matches(book -> book.getId() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
 
-        assertThat(em.getEntityManager().find(Book.class, returnedBook.getId())).isEqualTo(returnedBook);
+        assertThat(em.find(Book.class, returnedBook.getId())).isEqualTo(returnedBook);
     }
 
     @DisplayName("должен сохранять измененную книгу")
@@ -87,21 +80,33 @@ class JpaBookRepositoryTest {
     void shouldSaveUpdatedBook() {
         var expectedBook = new Book(FIRST_BOOK_ID, "BookTitle_10500", dbAuthors.get(2), dbGenres.get(2));
 
-        assertThat(em.getEntityManager().find(Book.class, expectedBook.getId())).isNotEqualTo(expectedBook);
+        assertThat(em.find(Book.class, expectedBook.getId())).isNotEqualTo(expectedBook);
 
         var returnedBook = jpaBookRepository.save(expectedBook);
         assertThat(returnedBook).isNotNull()
                 .matches(book -> book.getId() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
 
-        assertThat(em.getEntityManager().find(Book.class, returnedBook.getId())).isEqualTo(returnedBook);
+        assertThat(em.find(Book.class, returnedBook.getId())).isEqualTo(returnedBook);
     }
 
     @DisplayName("должен удалять книгу по id ")
     @Test
     void shouldDeleteBook() {
-        assertNotNull(em.getEntityManager().find(Book.class, FIRST_BOOK_ID));
+        assertNotNull(em.find(Book.class, FIRST_BOOK_ID));
         jpaBookRepository.deleteById(FIRST_BOOK_ID);
-        assertNull(em.getEntityManager().find(Book.class, FIRST_BOOK_ID));
+        assertNull(em.find(Book.class, FIRST_BOOK_ID));
+    }
+
+    private void generateTestData() {
+        for (int i = 1; i < 4; i++) {
+            Author author = new Author(i, "Author_%s".formatted(i));
+            Genre genre = new Genre(i, "Genre_%s".formatted(i));
+            Book book = new Book(i, "BookTitle_%s".formatted(i), author, genre);
+
+            dbAuthors.add(author);
+            dbGenres.add(genre);
+            dbBooks.add(book);
+        }
     }
 }

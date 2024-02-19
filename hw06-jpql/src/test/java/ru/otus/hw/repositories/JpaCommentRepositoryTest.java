@@ -32,6 +32,6 @@ class JpaCommentRepositoryTest {
                 .matches(comment -> comment.getId() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedComment);
 
-        assertThat(em.getEntityManager().find(Comment.class, returnedComment.getId())).isEqualTo(returnedComment);
+        assertThat(em.find(Comment.class, returnedComment.getId())).isEqualTo(returnedComment);
     }
 }
