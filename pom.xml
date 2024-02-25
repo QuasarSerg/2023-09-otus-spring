@@ -18,5 +18,6 @@
         <module>hw04-spring-shell</module>
         <module>hw05-jdbc-simple</module>
         <module>hw06-jpql</module>
+        <module>hw07-jpa</module>
     </modules>
 </project>
