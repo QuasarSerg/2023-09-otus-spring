@@ -53,7 +53,7 @@ public class InitMongoDBDataChangeLog {
     @ChangeSet(order = "004", id = "initComments", author = "gorbachev", runAlways = true)
     public void initComments(CommentRepository repository) {
         for (int i = 1; i < 4; i++) {
-            repository.save(new Comment("CommentText_%s", books.get(i - 1)));
+            repository.save(new Comment("CommentText_%s".formatted(i), books.get(i - 1)));
         }
     }
 }

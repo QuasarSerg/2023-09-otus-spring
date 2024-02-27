@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
@@ -80,10 +78,7 @@ class BookRepositoryTest {
         expectedBook.setAuthor(dbAuthors.get(0));
         expectedBook.setGenre(dbGenres.get(0));
 
-        Query queryBook = new Query();
-        queryBook.addCriteria(Criteria.where("id").is(expectedBook.getId()));
-
-        assertThat(mongoTemplate.findOne(queryBook, Book.class)).isNotEqualTo(expectedBook);
+        assertThat(mongoTemplate.findById(expectedBook.getId(), Book.class)).isNotEqualTo(expectedBook);
 
         var returnedBook = bookRepository.save(expectedBook);
         assertThat(returnedBook).isNotNull()
@@ -95,12 +90,10 @@ class BookRepositoryTest {
     @Test
     void shouldDeleteBook() {
         String firstBookId = dbBooks.get(2).getId();
-        Query queryBook = new Query();
-        queryBook.addCriteria(Criteria.where("id").is(firstBookId));
 
-        assertNotNull(mongoTemplate.findOne(queryBook, Book.class));
+        assertNotNull(mongoTemplate.findById(firstBookId, Book.class));
         bookRepository.deleteById(firstBookId);
-        assertNull(mongoTemplate.findOne(queryBook, Book.class));
+        assertNull(mongoTemplate.findById(firstBookId, Book.class));
     }
 
     private void generateTestData() {
