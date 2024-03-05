@@ -29,15 +29,7 @@ public class BookController {
 
     @GetMapping("/api/v1/books/{id}")
     public BookDto getBook(@PathVariable("id") long id) {
-        BookDto book;
-        if (id == 0) {
-            book = new BookDto();
-            book.setId(id);
-        } else {
-            book = bookService.findById(id);
-        }
-
-        return book;
+        return bookService.findById(id);
     }
 
     @PostMapping("/api/v1/books")

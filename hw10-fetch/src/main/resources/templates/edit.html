@@ -66,12 +66,12 @@
                 });
         }
 
-        function prepareAuthorsView(authors, book) {
+        function prepareAuthorsView(authors, bookId, bookAuthorId) {
             authors.forEach(author => {
                 const block = document.getElementById("book-author-input");
-                if (book.id == 0) {
+                if (bookId == 0) {
                     block.add(new Option(author.fullName, author.id));
-                } else if (book.author.id == author.id) {
+                } else if (bookAuthorId == author.id) {
                     block.add(new Option(author.fullName, author.id, false, true));
                 } else {
                     block.add(new Option(author.fullName, author.id));
@@ -79,17 +79,27 @@
             });
         }
 
-        function prepareGenresView(genres, book) {
+        function prepareGenresView(genres, bookId, bookGenreId) {
             genres.forEach(genre => {
                 const block = document.getElementById("book-genre-input")
-                if (book.id == 0) {
+                if (bookId == 0) {
                     block.add(new Option(genre.name, genre.id));
-                } else if (book.genre.id == genre.id) {
+                } else if (bookGenreId == genre.id) {
                     block.add(new Option(genre.name, genre.id, false, true));
                 } else {
                     block.add(new Option(genre.name, genre.id));
                 }
             });
+        }
+
+        function prepareNewBookView() {
+            fetch("/api/v1/authors")
+                .then(response => response.json())
+                .then(authors => prepareAuthorsView(authors, 0, 0));
+
+            fetch("/api/v1/genres")
+                .then(response => response.json())
+                .then(genres => prepareGenresView(genres, 0, 0));
         }
 
         function prepareBookView(book) {
@@ -100,26 +110,12 @@
 
             fetch("/api/v1/authors")
                 .then(response => response.json())
-                .then(authors => prepareAuthorsView(authors, book));
+                .then(authors => prepareAuthorsView(authors, book.id, book.author.id));
 
             fetch("/api/v1/genres")
                 .then(response => response.json())
-                .then(genres => prepareGenresView(genres, book));
+                .then(genres => prepareGenresView(genres, book.id, book.genre.id));
         }
-
-        function fillCells(row, comment) {
-            row.insertCell().innerText = comment.id;
-            row.insertCell().innerText = comment.text;
-        }
-
-<!--        function prepareCommentsListView(comments) {-->
-<!--            const table = document.getElementById("table-comments");-->
-<!--            alert(comment);-->
-<!--            comments.forEach(comment => {-->
-<!--                alert(comment.id)-->
-<!--                fillCells(comment.insertRow(), comment);-->
-<!--            });-->
-<!--        }-->
 
         function prepareCommentsListView(comments) {
             const elemList = document.getElementById("comments-list");
@@ -134,11 +130,15 @@
             const params = new URLSearchParams(window.location.search);
             const id = params.get("id");
 
-            fetch(`/api/v1/books/${id}`)
+            if (id == 0) {
+                prepareNewBookView();
+            } else {
+                fetch(`/api/v1/books/${id}`)
                 .then(response => response.json())
                 .then(book => prepareBookView(book));
+            }
 
-            fetch(`/api/v1/comments/${id}`)
+            fetch(`/api/v1/books/${id}/comments`)
                 .then(response => response.json())
                 .then(comments => prepareCommentsListView(comments));
         }

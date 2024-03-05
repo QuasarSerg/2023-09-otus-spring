@@ -14,7 +14,7 @@ import java.util.List;
 public class CommentController {
     private final CommentService commentService;
 
-    @GetMapping("/api/v1/comments/{id}")
+    @GetMapping("/api/v1/books/{id}/comments")
     public List<CommentDto> getCommentsByBookId(@PathVariable("id") long id) {
         return commentService.findAllByBookId(id);
     }
