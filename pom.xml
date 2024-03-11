@@ -22,5 +22,6 @@
         <module>hw08-mongodb</module>
         <module>hw09-mvc</module>
         <module>hw10-fetch</module>
+        <module>hw11-webflux</module>
     </modules>
 </project>
