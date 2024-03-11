@@ -16,7 +16,7 @@ import ru.otus.hw.repositories.UserRepository;
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)

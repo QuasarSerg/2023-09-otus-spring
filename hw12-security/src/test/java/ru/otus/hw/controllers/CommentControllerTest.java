@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.dto.AuthorDto;
@@ -64,5 +65,17 @@ class CommentControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(dbComments)));
 
         verify(commentService, times(1)).findAllByBookId(bookId);
+    }
+
+    @DisplayName("Анонимный пользователь. Ошибка при загрузке всех комментариев для книги")
+    @Test
+    @WithAnonymousUser
+    void shouldFailReturnAllCommentsByBookId() throws Exception {
+        long bookId = book.getId();
+        doReturn(dbComments).when(commentService).findAllByBookId(bookId);
+
+        mockMvc.perform(get("/api/v1/books/{id}/comments", bookId))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 }
