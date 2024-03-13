@@ -11,8 +11,10 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.otus.hw.configurations.SecurityConfiguration;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.services.AuthorService;
+import ru.otus.hw.services.UserDetailsServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockUser(username = "TestUser")
-@WebMvcTest(AuthorController.class)
+@WebMvcTest({AuthorController.class, SecurityConfiguration.class})
 class AuthorControllerTest {
 
     @Autowired
@@ -35,6 +37,9 @@ class AuthorControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private UserDetailsServiceImpl userDetailsServiceImpl;
 
     private final List<AuthorDto> dbAuthors = new ArrayList<>();
 

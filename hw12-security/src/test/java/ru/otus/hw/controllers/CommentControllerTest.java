@@ -10,11 +10,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.otus.hw.configurations.SecurityConfiguration;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.CommentDto;
 import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.services.CommentService;
+import ru.otus.hw.services.UserDetailsServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockUser(username = "TestUser")
-@WebMvcTest(CommentController.class)
+@WebMvcTest({CommentController.class, SecurityConfiguration.class})
 class CommentControllerTest {
 
     @Autowired
@@ -37,6 +39,9 @@ class CommentControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private UserDetailsServiceImpl userDetailsServiceImpl;
 
     private BookDto book;
 

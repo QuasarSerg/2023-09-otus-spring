@@ -10,8 +10,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.otus.hw.configurations.SecurityConfiguration;
 import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.services.GenreService;
+import ru.otus.hw.services.UserDetailsServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockUser(username = "TestUser")
-@WebMvcTest(GenreController.class)
+@WebMvcTest({GenreController.class, SecurityConfiguration.class})
 class GenreControllerTest {
 
     @Autowired
@@ -34,6 +36,9 @@ class GenreControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private UserDetailsServiceImpl userDetailsServiceImpl;
 
     private final List<GenreDto> dbGenres = new ArrayList<>();
 
