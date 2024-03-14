@@ -7,13 +7,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.otus.hw.configurations.SecurityConfiguration;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.CommentDto;
 import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.services.CommentService;
+import ru.otus.hw.services.UserDetailsServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockUser(username = "user", authorities = "ROLE_USER")
-@WebMvcTest(CommentController.class)
+@WebMvcTest({CommentController.class, SecurityConfiguration.class})
 class CommentControllerTest {
 
     @Autowired
@@ -36,6 +39,9 @@ class CommentControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private UserDetailsServiceImpl userDetailsServiceImpl;
 
     private BookDto book;
 
@@ -64,5 +70,17 @@ class CommentControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(dbComments)));
 
         verify(commentService, times(1)).findAllByBookId(bookId);
+    }
+
+    @DisplayName("Анонимный пользователь. Ошибка при загрузке всех комментариев для книги")
+    @Test
+    @WithAnonymousUser
+    void shouldFailReturnAllCommentsByBookId() throws Exception {
+        long bookId = book.getId();
+        doReturn(dbComments).when(commentService).findAllByBookId(bookId);
+
+        mockMvc.perform(get("/api/v1/books/{id}/comments", bookId))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 }

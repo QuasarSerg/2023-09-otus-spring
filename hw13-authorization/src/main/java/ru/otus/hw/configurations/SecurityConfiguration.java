@@ -39,7 +39,8 @@ public class SecurityConfiguration {
                                 "/api/v1/books/{id}").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .formLogin(Customizer.withDefaults());
+                .formLogin(Customizer.withDefaults())
+                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }

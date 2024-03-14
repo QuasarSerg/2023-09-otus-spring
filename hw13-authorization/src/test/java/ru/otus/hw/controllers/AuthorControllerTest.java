@@ -8,10 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.otus.hw.configurations.SecurityConfiguration;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.services.AuthorService;
+import ru.otus.hw.services.UserDetailsServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockUser(username = "user", authorities = "ROLE_USER")
-@WebMvcTest(AuthorController.class)
+@WebMvcTest({AuthorController.class, SecurityConfiguration.class})
 class AuthorControllerTest {
 
     @Autowired
@@ -34,6 +37,9 @@ class AuthorControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private UserDetailsServiceImpl userDetailsServiceImpl;
 
     private final List<AuthorDto> dbAuthors = new ArrayList<>();
 
@@ -56,5 +62,16 @@ class AuthorControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(dbAuthors)));
 
         verify(authorService, times(1)).findAll();
+    }
+
+    @DisplayName("Анонимный пользователь. Ошибка при получении всех авторов")
+    @Test
+    @WithAnonymousUser
+    void shouldFailReturnAllAuthors() throws Exception {
+        doReturn(dbAuthors).when(authorService).findAll();
+
+        mockMvc.perform(get("/api/v1/authors"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 }

@@ -16,14 +16,14 @@ import ru.otus.hw.repositories.UserRepository;
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
                 .map(user -> User.builder()
                         .username(user.getUsername())
                         .password(user.getPassword())
-                        .authorities(user.getRole())
+                        .authorities(user.getAuthority())
                         .build()
                 )
                 .orElseThrow(() -> new UsernameNotFoundException("User %s is not authenticated".formatted(username)));

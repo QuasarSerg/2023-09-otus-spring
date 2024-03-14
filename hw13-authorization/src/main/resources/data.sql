@@ -13,6 +13,6 @@ values ('CommentText_1', 1), ('CommentText_2', 1), ('CommentText_1', 2), ('Comme
 insert into comments(text, book_id)
 values ('CommentText_1', 1), ('CommentText_2', 1), ('CommentText_1', 2), ('CommentText_1', 3);
 
-insert into users(username, password, role)
+insert into users(username, password, authority)
 values ('user', '$2a$12$jjGkt67AbJk70QUdFOhdweeuj2RFQXCMscNo2X4BGz/OzYb7HuHAe', 'ROLE_USER'),
        ('admin', '$2a$12$jjGkt67AbJk70QUdFOhdweeuj2RFQXCMscNo2X4BGz/OzYb7HuHAe', 'ROLE_ADMIN'); --bcrypt
