@@ -24,5 +24,6 @@
         <module>hw10-fetch</module>
         <module>hw11-webflux</module>
         <module>hw12-security</module>
+        <module>hw13-authorization</module>
     </modules>
 </project>
