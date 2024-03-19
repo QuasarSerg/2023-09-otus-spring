@@ -23,8 +23,8 @@
         <module>hw09-mvc</module>
         <module>hw10-fetch</module>
         <module>hw11-webflux</module>
-<!--        <module>hw12-security</module>-->
-<!--        <module>hw13-authorization</module>-->
+        <module>hw12-security</module>
+        <module>hw13-authorization</module>
         <module>hw14-batch</module>
     </modules>
 </project>
