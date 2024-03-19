@@ -25,5 +25,6 @@
         <module>hw11-webflux</module>
         <module>hw12-security</module>
         <module>hw13-authorization</module>
+        <module>hw14-batch</module>
     </modules>
 </project>
