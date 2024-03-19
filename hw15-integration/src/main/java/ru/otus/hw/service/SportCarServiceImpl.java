@@ -40,7 +40,7 @@ public class SportCarServiceImpl implements SportCarService {
     }
 
     public void runProcess() {
-        var caterpillars = List.of(
+        var cars = List.of(
                 new Car("Aurus"),
                 new Car("GAZ"),
                 new Car("Lada"),
@@ -49,7 +49,7 @@ public class SportCarServiceImpl implements SportCarService {
                 new Car("UAZ"),
                 new Car("Sollers")
         );
-        Collection<SportCar> result = sportCarGateway.process(caterpillars);
+        Collection<SportCar> result = sportCarGateway.process(cars);
         log.info(result.toString());
     }
 }

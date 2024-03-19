@@ -11,5 +11,5 @@ import java.util.Collection;
 @MessagingGateway
 public interface SportCarGateway {
     @Gateway(requestChannel = "carChannel", replyChannel = "sportCarChannel")
-    Collection<SportCar> process(Collection<Car> caterpillars);
+    Collection<SportCar> process(Collection<Car> cars);
 }

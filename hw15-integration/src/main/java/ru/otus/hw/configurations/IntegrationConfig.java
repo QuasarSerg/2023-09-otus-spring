@@ -35,7 +35,6 @@ public class IntegrationConfig {
         return IntegrationFlow.from(carChannel())
                 .split()
                 .handle(sportCarService, "transform")
-                .<SportCar, SportCar>transform(car -> new SportCar(car.getName(), car.getModifications()))
                 .aggregate()
                 .channel(sportCarChannel())
                 .get();
