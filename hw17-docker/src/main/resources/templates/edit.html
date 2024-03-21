@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit person</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+
+        h3 {
+            background-image: url("../static/quasar.png");
+            background-repeat: no-repeat;
+            padding: 2px;
+            padding-left: 30px;
+        }
+
+        .errors {
+            color: red;
+        }
+    </style>
+
+    <style type="text/css" th:inline="text">
+        [[h3]] {
+            background-image: url([[@{/quasar.png}]]);
+            background-repeat: no-repeat;
+            padding: 2px;
+            padding-left: 30px;
+        }
+    </style>
+
+    <script>
+        function updateBook() {
+            const id = document.getElementById("book-id-input").value;
+            const title = document.getElementById("book-title-input").value;
+            const authorId = document.getElementById("book-author-input").value;
+            const author = {id: authorId};
+            const genreId = document.getElementById("book-genre-input").value;
+            const genre = {id: genreId};
+            const book = {id: id, title: title, author: author, genre: genre}
+
+            const method = "PUT";
+            if (id == 0) {
+                const method = "POST";
+            }
+            const headers = {'Accept': 'application/json','Content-Type': 'application/json'}
+            const body = JSON.stringify(book)
+
+            fetch("/api/v1/books", {method: method, headers: headers, body: body})
+                .then(response => response.json())
+                .then(function () {
+                    location.href = "/";
+                });
+        }
+
+        function prepareAuthorsView(authors, bookId, bookAuthorId) {
+            authors.forEach(author => {
+                const block = document.getElementById("book-author-input");
+                if (bookId == 0) {
+                    block.add(new Option(author.fullName, author.id));
+                } else if (bookAuthorId == author.id) {
+                    block.add(new Option(author.fullName, author.id, false, true));
+                } else {
+                    block.add(new Option(author.fullName, author.id));
+                }
+            });
+        }
+
+        function prepareGenresView(genres, bookId, bookGenreId) {
+            genres.forEach(genre => {
+                const block = document.getElementById("book-genre-input")
+                if (bookId == 0) {
+                    block.add(new Option(genre.name, genre.id));
+                } else if (bookGenreId == genre.id) {
+                    block.add(new Option(genre.name, genre.id, false, true));
+                } else {
+                    block.add(new Option(genre.name, genre.id));
+                }
+            });
+        }
+
+        function prepareNewBookView() {
+            fetch("/api/v1/authors")
+                .then(response => response.json())
+                .then(authors => prepareAuthorsView(authors, 0, 0));
+
+            fetch("/api/v1/genres")
+                .then(response => response.json())
+                .then(genres => prepareGenresView(genres, 0, 0));
+        }
+
+        function prepareBookView(book) {
+            const id = document.getElementById("book-id-input");
+            id.value = book.id;
+            const title = document.getElementById("book-title-input");
+            title.value = book.title;
+
+            fetch("/api/v1/authors")
+                .then(response => response.json())
+                .then(authors => prepareAuthorsView(authors, book.id, book.author.id));
+
+            fetch("/api/v1/genres")
+                .then(response => response.json())
+                .then(genres => prepareGenresView(genres, book.id, book.genre.id));
+        }
+
+        function prepareCommentsListView(comments) {
+            const elemList = document.getElementById("comments-list");
+            comments.forEach(comment => {
+                const elemComment = document.createElement("li");
+                elemComment.innerText = comment.text;
+                elemList.appendChild(elemComment);
+            });
+        }
+
+        function uploadContent() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get("id");
+
+            if (id == 0) {
+                prepareNewBookView();
+            } else {
+                fetch(`/api/v1/books/${id}`)
+                .then(response => response.json())
+                .then(book => prepareBookView(book));
+            }
+
+            fetch(`/api/v1/books/${id}/comments`)
+                .then(response => response.json())
+                .then(comments => prepareCommentsListView(comments));
+        }
+    </script>
+
+</head>
+
+<body onload="uploadContent()">
+<form id="edit-form" action="edit.html">
+    <h3 th:text = "#{book-update-form-header}">Book Info:</h3>
+
+    <div class="mb-3">
+        <label for="book-id-input" th:text="#{book-field-id} + ':'">Id:</label>
+        <input id="book-id-input" type="text" readonly="readonly" name="id"/>
+    </div>
+
+    <div class="mb-3">
+        <label for="book-title-input" th:text="#{book-field-title} + ':'">Title:</label>
+        <input id="book-title-input" name="title" type="text" value="BookTitle"/>
+    </div>
+
+    <div class="mb-3">
+        <label for="book-author-input" th:text="#{book-field-author} + ':'">Author:</label>
+        <select id="book-author-input" name="author">
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="book-genre-input" th:text="#{book-field-genre} + ':'">Genre:</label>
+        <select id="book-genre-input" name="genre">
+        </select>
+    </div>
+
+    <h3 th:text="#{comment-table-header}">Comments:</h3>
+    <ul id = "comments-list" class="list-group"></ul>
+
+    <button type="button" onclick="updateBook()" th:text="#{save-button-caption}" class="btn btn-success btn-lg">Save</button>
+    <a href="list.html" th:href="@{/}">
+        <button type="button" th:text="#{cancel-button-caption}" class="btn btn-secondary btn-lg">Cancel</button>
+    </a>
+</form>
+</body>
+</html>
