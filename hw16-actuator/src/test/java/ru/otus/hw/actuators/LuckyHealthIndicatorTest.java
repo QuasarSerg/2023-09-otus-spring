@@ -34,17 +34,9 @@ class LuckyHealthIndicatorTest {
         Long author_id = 1L;
         Long book_id = 1L;
 
-        Author author = new Author();
-        author.setId(author_id);
-
-        Book book = new Book();
-        book.setId(book_id);
-        book.setAuthor(author);
-
         doReturn(author_id).when(authorRepository).count();
         doReturn(book_id).when(bookRepository).count();
-        doReturn(Optional.of(author)).when(authorRepository).findById(author_id);
-        doReturn(Optional.of(book)).when(bookRepository).findById(book_id);
+        doReturn(true).when(bookRepository).existsByIdAndAuthorId(book_id, author_id);
 
         Health health = luckyHealthIndicator.health();
         assertEquals(Status.UP, health.getStatus());

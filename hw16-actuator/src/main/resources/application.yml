@@ -30,7 +30,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: "metrics,health,logfile"
   endpoint:
     health:
       show-details: when_authorized
@@ -44,3 +44,5 @@ management:
 logging:
   level:
     ROOT: DEBUG
+  file:
+    name: ./logs/hw16-actuator.log

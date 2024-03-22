@@ -5,8 +5,6 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.stereotype.Component;
-import ru.otus.hw.models.Author;
-import ru.otus.hw.models.Book;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 
@@ -24,12 +22,10 @@ public class LuckyHealthIndicator implements HealthIndicator {
     public Health health() {
         SecureRandom secureRandom = new SecureRandom();
 
-        Author author = authorRepository.findById(secureRandom.nextLong(authorRepository.count()) + 1)
-                .orElse(new Author());
-        Book book = bookRepository.findById(secureRandom.nextLong(bookRepository.count()) + 1)
-                .orElse(new Book());
+        Long bookId = secureRandom.nextLong(authorRepository.count()) + 1;
+        Long authorId = secureRandom.nextLong(bookRepository.count()) + 1;
 
-        if (book.getAuthor().equals(author)) {
+        if (bookRepository.existsByIdAndAuthorId(bookId, authorId)) {
             return Health.up().status(Status.UP)
                     .withDetail("message", "Все в порядке!").build();
         } else {
