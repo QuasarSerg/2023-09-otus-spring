@@ -4,7 +4,7 @@ import ru.otus.hw.dto.BookDto;
 
 import java.util.List;
 
-public class BooksServiceProxyImpl implements BooksServiceProxy {
+public class BooksServiceImpl implements BooksService {
 
     @Override
     public List<BookDto> listBooks() {

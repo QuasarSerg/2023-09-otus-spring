@@ -15,7 +15,7 @@ import ru.otus.hw.dto.BookDto;
 import java.util.List;
 
 @FeignClient(name = "books-service")
-public interface BooksServiceProxy {
+public interface BooksService {
 
     @CircuitBreaker(name = "getBooks")
     @GetMapping("/api/v1/books")
