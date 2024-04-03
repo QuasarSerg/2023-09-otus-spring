@@ -30,5 +30,6 @@
         <module>hw16-actuator</module>
         <module>hw17-docker</module>
         <module>hw18-hystrix</module>
+        <module>hw19-applique-clothes</module>
     </modules>
 </project>

@@ -1,0 +1,27 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/applique_clothes
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - X_KEY=Key 60DA50481459409FE7E00C62A2B5FFD2
+      - X_SECRET=Secret 2D6D857DE99F06D2A65E46446A99E101
+    depends_on:
+      - postgres
+
+  postgres:
+    image: "postgres:16"
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=applique_clothes
+      - X_KEY=Key 60DA50481459409FE7E00C62A2B5FFD2
+      - X_SECRET=Secret 2D6D857DE99F06D2A65E46446A99E101

@@ -1,0 +1,35 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/applique_clothes
+    username: postgres
+    password: 1234
+  sql:
+    init:
+      mode: always
+#      data-locations: classpath:data.sql
+#      schema-locations: classpath:schema.sql
+
+#  h2:
+#    console:
+#      path: /h2-console
+#      settings:
+#        web-allow-others: true
+  output:
+    ansi:
+      enabled: always
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: false
+    show-sql: true
+  mvc:
+    hiddenmethod:
+      filter.enabled: true
+
+web-client:
+  base-url: https://api-key.fusionbrain.ai
+  x-key: ${X_KEY:Key 60DA50481459409FE7E00C62A2B5FFD2}
+  x-secret: ${X_SECRET:Secret 2D6D857DE99F06D2A65E46446A99E101}

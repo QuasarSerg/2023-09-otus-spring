@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit person</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script>
+        function prepareAppliqueView(applique) {
+            const blockApplique = document.getElementById("order-applique-input");
+            blockApplique.src = applique == null ? "" : "data:image/png;base64, " + applique.images[0];
+        }
+
+        function updateApplique() {
+            const prompt = document.getElementById("order-prompt-input").value;
+
+            fetch(`/api/v1/textToImage/${prompt}`)
+                .then(response => response.json())
+                .then(applique => prepareAppliqueView(applique));
+        }
+
+        function preparePriceView(product) {
+            const blockAmount = document.getElementById("order-amount-input");
+            const blockPrice = document.getElementById("order-price-input");
+
+            blockPrice.value = product.price * blockAmount.value;
+        }
+
+        function updatePrice() {
+            const id = document.getElementById("order-product-input").value;
+
+            fetch(`/api/v1/products/${id}`)
+                .then(response => response.json())
+                .then(product => preparePriceView(product));
+        }
+
+        function updateOrder() {
+            const id = document.getElementById("order-id-input").value;
+            const productId = document.getElementById("order-product-input").value;
+            const product = {id: productId};
+            const amount = document.getElementById("order-amount-input").value;
+            const price = document.getElementById("order-price-input").value;
+            const applique = document.getElementById("order-applique-input").src;
+            const order = {id: id, product: product, amount: amount, price: price, applique: applique}
+            const method = id == 0 ? "POST" : "PUT";
+
+            const headers = {'Accept': 'application/json','Content-Type': 'application/json'}
+            const body = JSON.stringify(order)
+
+            fetch("/api/v1/orders", {method: method, headers: headers, body: body})
+                .then(response => response.json())
+                .then(function () {
+                    location.href = "/";
+                });
+        }
+
+        function prepareProductsView(products, orderId, orderProductId) {
+            const block = document.getElementById("order-product-input");
+            products.forEach(product => {
+                if (orderId == 0) {
+                    block.add(new Option(product.fullName, product.id));
+                } else if (orderProductId == product.id) {
+                    block.add(new Option(product.fullName, product.id, false, true));
+                } else {
+                    block.add(new Option(product.fullName, product.id));
+                }
+            });
+        }
+
+        function prepareNewOrderView() {
+            fetch("/api/v1/products")
+                .then(response => response.json())
+                .then(products => prepareProductsView(products, 0, 0));
+        }
+
+        function prepareOrderView(order) {
+            const id = document.getElementById("order-id-input");
+            id.value = order.id;
+            const applique = document.getElementById("order-applique-input");
+            applique.src = order.applique;
+            const amount = document.getElementById("order-amount-input");
+            amount.value = order.amount;
+            const price = document.getElementById("order-price-input");
+            price.value = order.price;
+
+            fetch("/api/v1/products")
+                .then(response => response.json())
+                .then(products => prepareProductsView(products, order.id, order.product.id));
+        }
+
+        function uploadContent() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get("id");
+
+            if (id == 0) {
+                prepareNewOrderView();
+            } else {
+                fetch(`/api/v1/orders/${id}`)
+                .then(response => response.json())
+                .then(order => prepareOrderView(order));
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+</head>
+
+<body onload="uploadContent()">
+<form id="edit-form" action="edit.html">
+    <h3 th:text="#{order-update-form-header}">Order Info:</h3>
+
+    <div class="bd-example m-0 border-0">
+        <div class="row  row-cols-1 row-cols-md-2 g-4">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <img id="order-applique-input" alt="Applique" src=""/>
+                        <h5><label for="order-prompt-input" th:text="#{order-field-prompt} + ':'">Prompt:</label></h5>
+                        <textarea id="order-prompt-input" class="form-control" aria-label="With textarea" style="height: 60px;"></textarea>
+                        <button type="button" onclick="updateApplique()" th:text="#{generate-button-caption}"
+                                class="btn btn-outline-success">Generate
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="mb-3">
+                        <label for="order-id-input" th:text="#{order-field-id} + ':'">Id:</label>
+                        <input id="order-id-input" type="text" readonly="readonly" name="id"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="order-product-input" th:text="#{order-field-product} + ':'">Product:</label>
+                        <select id="order-product-input" name="product">
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="order-amount-input" th:text="#{order-field-amount} + ':'">Amount:</label>
+                        <input id="order-amount-input" name="amount" type="number" value="1"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="order-price-input" th:text="#{order-field-price} + ':'">Price:</label>
+                        <input id="order-price-input" name="price" type="number" readonly="readonly"/>
+                        <button type="button" onclick="updatePrice()" th:text="#{calculate-button-caption}"
+                                class="btn btn-outline-success">Calculate
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" onclick="updateOrder()" th:text="#{save-button-caption}" class="btn btn-outline-primary">
+        Save
+    </button>
+    <a href="orders.html" th:href="@{/}">
+        <button type="button" th:text="#{cancel-button-caption}" class="btn btn-outline-dark">Cancel</button>
+    </a>
+</form>
+</body>
+</html>
