@@ -31,5 +31,5 @@ spring:
 
 web-client:
   base-url: https://api-key.fusionbrain.ai
-  x-key: ${X_KEY:Key 60DA50481459409FE7E00C62A2B5FFD2}
-  x-secret: ${X_SECRET:Secret 2D6D857DE99F06D2A65E46446A99E101}
+  x-key: ${X_KEY:}
+  x-secret: ${X_SECRET:}
